@@ -1,0 +1,35 @@
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+.image-full-width img {
+    width: 100%;
+}
+
+.image-half-width img {
+    width: 50%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.remark-slide-content {
+    background-color: #EFECE1;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #046380;
+}
+
+.remark-slide-number {
+    display: none;
+}
+
+.remark-slide-scaler {
+    box-shadow: none;
+}
+
+.remark-container {
+    background-color: #EFECE1;
+}

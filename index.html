@@ -1,0 +1,281 @@
+<html>
+    <head>
+        <title>Elm @ javaBin</title>
+        <meta charset="utf-8">
+        <link href="styles.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700" rel="stylesheet">
+    </head>
+    <body>
+        <textarea id="source">
+
+class: center, middle
+
+# Elm @ javaBin
+#### (eller JavaZone om du vil, da..)
+
+---
+
+background-image: url(expo.jpg)
+
+---
+
+class: center, middle
+
+# Switcharoo
+
+???
+
+- Vise 
+
+---
+
+class: center, middle
+
+# JavaScript
+
+---
+
+class: center, middle
+
+wat.
+
+---
+
+class: center, middle
+
+# WAT.
+
+---
+
+class: center, middle
+
+.image-half-width[![Elm logo](elm-logo.svg)]
+
+---
+
+class: center, middle
+
+# The codez
+
+---
+
+```Elm
+-- Main.elm
+type alias Model =
+    { slidesModel : Slides.Model
+    }
+```
+
+--
+
+```Elm
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Time.every (30 * second) FetchNewSlides
+```
+
+--
+
+```Elm
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+    case msg of
+        ...
+
+        NewSlides (Err _) ->
+            (model, Cmd.none)
+
+        NewSlides (Ok newSlides) ->
+            let
+                s = model.slides
+            in
+                ( { model | slides =
+                    { s | nextSlides = Just newSlides }
+                  }
+                , Cmd.none)
+```
+
+---
+
+```Elm
+-- Slides.elm
+type alias Model =
+    { slides : List Slide
+    , current : Int
+    , nextSlides : Maybe (List Slide)
+    , switching : Bool
+    }
+```
+
+--
+
+```Elm
+type Slide
+    = TextSlide Image
+    | ImageSlide Text
+    | VideoSlide Video
+    | TweetsSlide Tweets
+    | ProgramSlide Program
+```
+
+--
+
+```Elm
+subscriptions : Sub Msg
+subscriptions =
+    Time.every (10 * second) PrepareNext
+```
+
+---
+
+```Elm
+getItem : Int -> List a -> Maybe a
+getItem index = List.head << List.drop index
+
+
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+    case msg of
+        ...
+
+        PrepareNext ->
+            ( { model | switching = True }, showNext)
+
+        NextSlide ->
+            case getItem (model.current + 1) model.slides of
+                Just _ ->
+                    ( { model | current = model.current + 1
+                      , switching = False
+                      }
+                    , Cmd.none)
+
+                Nothing ->
+                    (swapSlidesIfNewExists model, Cmd.none)
+```
+
+--
+
+```Elm
+showNext : Cmd Msg
+showNext =
+    Task.perform (\_ -> NextSlide) <| sleep (500 * millisecond)
+```
+
+
+---
+
+```Elm
+view : Model -> Html Msg
+view model =
+    let
+        slide =
+            getItem model.current model.slides
+    in
+        case slide of
+            Just s ->
+                viewSlide s
+
+            Nothing ->
+                div [] []
+```
+
+---
+
+class: center, middle
+
+# Making impossible states impossible
+
+### Richard Feldman
+
+### [youtu.be/IcgmSRJHu_8](https://youtu.be/IcgmSRJHu_8)
+
+---
+
+```Elm
+type alias Model =
+    { slides : List Slide
+    , current : Int
+    , nextSlides : Maybe (List Slide)
+    , switching : Bool
+    }
+```
+
+--
+
+```Elm
+Model [ImageSlide ..., VideoSlide ...] 99 Nothing False
+```
+
+---
+
+```Elm
+type Zipper a = Zipper (List a) a (List a)
+```
+
+--
+
+```Elm
+fromList : List a -> Maybe (Zipper a)
+
+next : Zipper a -> Maybe (Zipper a)
+
+first : Zipper a -> Zipper a
+
+current : Zipper a -> a
+```
+
+--
+
+```Elm
+view : Model -> Html Msg
+view model =
+    let
+        slide =
+            getItem model.current model.slides
+    in
+        case slide of
+            Just s ->
+                viewSlide s
+
+            Nothing ->
+                div [] []
+```
+
+--
+
+```Elm
+view : Model -> Html Msg
+view model =
+    viewSlide <| current model.slides
+```
+
+---
+
+class: center, middle
+
+# Funksjoner
+# vs
+# Komponenter
+
+---
+
+class: center, middle
+
+# [github.com/javabin/switcharoo](https://github.com/javabin/switcharoo)
+
+
+???
+
+- Vi har også flere apps i Elm
+- For eksempel Submit (som er ny av året)
+- Switcharoo har kjørt på andre konferanser også
+- Bekymring at jeg er den eneste som kan fikse på ting og skrive på koden, men vi har nå flere apps og flere andre som koder i Elm
+- Kommer nok til å fortsette å utvikle i Elm. Det gir meg den gode følelsen, og det å vite at ting ikke kommer til å krasje er en veldig undervurdert følelse
+
+        </textarea>
+        <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script>
+        <script>
+           var slideshow = remark.create();
+        </script>
+    </body>
+</html>
